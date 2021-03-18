@@ -5,7 +5,7 @@ import '../../node_modules/@pnotify/core/dist/PNotify.css';
 import '../../node_modules/@pnotify/mobile/dist/PNotifyMobile.css';
 import '@pnotify/core/dist/BrightTheme.css';
 import { info } from '@pnotify/core';
-export { fetchImages, newQueryLoad, nextPageLoad};
+export { fetchImages, newQueryLoad, nextPageLoad };
 
 const noticeOptions = {
     shadow: true,
@@ -19,15 +19,16 @@ const queryOptions = {
     currentPage: 1,
     query: 'cats',
 }
-function fetchImages({ BASE_URL, API_TOKEN, currentPage, query}) {
-    return fetch(`${BASE_URL}?key=${API_TOKEN}&q=${query}&page=${currentPage}&per_page=12`)
-        .then(responce => responce.json())
-        .then(renderGallery)
-        .finally(renderNotify(queryOptions, noticeOptions));
+
+async function fetchImages({ BASE_URL, API_TOKEN, currentPage, query }) {
+    const incomingImgObject = await fetch(`${BASE_URL}?key=${API_TOKEN}&q=${query}&page=${currentPage}&per_page=12`);
+    const parsedResponce = await incomingImgObject.json();
+    renderGallery(parsedResponce.hits);
+    renderNotify(queryOptions, noticeOptions);
 };
 
 function renderGallery(imgArray) {
-    const renderArray = imgArray.hits;
+    const renderArray = imgArray;
     const cardMarkup = imgCardTemplate(renderArray);
     galleryRef.insertAdjacentHTML('beforeend', cardMarkup);
 };
@@ -47,7 +48,7 @@ function newQueryLoad() {
 };
 
 function renderNotify({ query, currentPage }, noticeOptions) {
-    info({ text: `${query} results page ${currentPage}`, ...noticeOptions})
+    info({ text: `${query} results page ${currentPage}`, ...noticeOptions })
 }
 
 
